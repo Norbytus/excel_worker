@@ -1,0 +1,10 @@
+[package]
+name = "excel_worker"
+version = "0.1.0"
+authors = ["norbytus <norbyt93@gmail.com>"]
+
+[dependencies]
+serde_json = "1.0.2"
+serde_derive = "1.0.8"
+serde = "1.0.8"
+simple_excel_writer = "0.1.4"
