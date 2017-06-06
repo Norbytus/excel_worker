@@ -29,6 +29,8 @@ impl XlsxFiles {
 
         let (tx, rx) = channel();
 
+        let mut size = self.files.capacity() - 1;
+
         for file in self.files {
             let arc_file = Arc::new(file);
             let file_clone = arc_file.clone();
@@ -38,8 +40,11 @@ impl XlsxFiles {
             });
         }
 
-        loop {
-            println!("{:?}", rx.recv().unwrap());
+        while size != 0 {
+            match rx.recv() {
+                Ok(_) => size -= 1,
+                Err(_) => {},
+            };
         }
 
     }
