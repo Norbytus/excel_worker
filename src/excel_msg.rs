@@ -2,13 +2,17 @@ use excel::*;
 
 use serde_json::Value;
 
-use std::thread;
-use std::sync::Arc;
-use std::sync::mpsc::channel;
+// use std::thread;
+// use std::sync::Arc;
+// use std::sync::mpsc::channel;
+
+use std::path::{Path, PathBuf};
+use std::process::Command;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct XlsxFiles {
     files: Vec<XlsxFile>,
+    to: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -27,25 +31,38 @@ impl XlsxFiles {
 
     pub fn to_xlsx(self) {
 
-        let (tx, rx) = channel();
+        // let (tx, rx) = channel();
 
-        let mut size = self.files.capacity() - 1;
+        // let mut size = self.files.capacity() - 1;
 
         for file in self.files {
-            let arc_file = Arc::new(file);
-            let file_clone = arc_file.clone();
-            let sender = tx.clone();
-            thread::spawn(move || {
-                sender.send(file_clone.save()).unwrap();
-            });
+            let name = file.save();
+            let cmd = format!("zip -rv {} {}", self.to, name);
+            Command::new("sh")
+                .arg("-c")
+                .arg(cmd)
+                .spawn()
+                .unwrap()
+                .wait();
+            let mut path = PathBuf::from(&name);
+            path.pop();
+            // let arc_file = Arc::new(file);
+            // let file_clone = arc_file.clone();
+            // let sender = tx.clone();
+            // thread::spawn(move || {
+            //     match sender.send(file_clone.save()) {
+            //         Ok(_) => {},
+            //         Err(e) => println!("{:?}", e),
+            //     };
+            // });
         }
 
-        while size != 0 {
-            match rx.recv() {
-                Ok(_) => size -= 1,
-                Err(_) => {},
-            };
-        }
+        // while size != 0 {
+        //     match rx.recv() {
+        //         Ok(_) => size -= 1,
+        //         Err(e) => {println!("{:?}", e);},
+        //     };
+        // }
 
     }
 
