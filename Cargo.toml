@@ -11,3 +11,4 @@ simple_excel_writer = "0.1.4"
 beanstalkd = { git = "https://github.com/schickling/rust-beanstalkd.git" }
 zip = "0.2.3"
 clap = "2.24.2"
+daemonize = "0.2.3"
