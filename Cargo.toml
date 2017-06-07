@@ -8,3 +8,5 @@ serde_json = "1.0.2"
 serde_derive = "1.0.8"
 serde = "1.0.8"
 simple_excel_writer = "0.1.4"
+beanstalkd = { git = "https://github.com/schickling/rust-beanstalkd.git" }
+zip = "0.2.3"
