@@ -6,7 +6,7 @@ use serde_json::Value;
 // use std::sync::Arc;
 // use std::sync::mpsc::channel;
 
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::process::Command;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -31,10 +31,6 @@ impl XlsxFiles {
 
     pub fn to_xlsx(self) {
 
-        // let (tx, rx) = channel();
-
-        // let mut size = self.files.capacity() - 1;
-
         for file in self.files {
             let name = file.save();
             let cmd = format!("zip -rv {} {}", self.to, name);
@@ -46,23 +42,7 @@ impl XlsxFiles {
                 .wait();
             let mut path = PathBuf::from(&name);
             path.pop();
-            // let arc_file = Arc::new(file);
-            // let file_clone = arc_file.clone();
-            // let sender = tx.clone();
-            // thread::spawn(move || {
-            //     match sender.send(file_clone.save()) {
-            //         Ok(_) => {},
-            //         Err(e) => println!("{:?}", e),
-            //     };
-            // });
         }
-
-        // while size != 0 {
-        //     match rx.recv() {
-        //         Ok(_) => size -= 1,
-        //         Err(e) => {println!("{:?}", e);},
-        //     };
-        // }
 
     }
 

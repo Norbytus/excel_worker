@@ -22,6 +22,8 @@ use daemonize::Daemonize;
 use std::thread;
 use std::time::Duration;
 
+use excel_msg::XlsxFiles;
+
 use clap::{Arg, App};
 
 fn main() {
@@ -59,25 +61,24 @@ fn main() {
     let tube = app.value_of("tube").unwrap().to_string();
 
     if app.is_present("daemon") {
-    let daemonize = Daemonize::new()
-        .pid_file("/tmp/excel.pid")
-        .chown_pid_file(false)
-        .working_directory("/tmp")
-        .user("nobody")
-        .group("daemon")
-        .privileged_action(move || {
-            init(&delay, &ip, &port, &tube);
-            ()
-        });
+        let daemonize = Daemonize::new()
+            .pid_file("/tmp/excel.pid")
+            .chown_pid_file(false)
+            .working_directory("/tmp")
+            .user("nobody")
+            .group("daemon")
+            .privileged_action(move || {
+                init(&delay, &ip, &port, &tube);
+                ()
+            });
 
-    match daemonize.start() {
-        Ok(_) => {},
-        Err(e) => println!("{:?}", e),
-    };
+        match daemonize.start() {
+            Ok(_) => {},
+            Err(e) => println!("{:?}", e),
+        };
     } else {
         init(&delay, &ip, &port, &tube);
     }
-
 
 }
 
@@ -93,7 +94,8 @@ fn init(delay: &str, ip: &str, port: &str, tube: &str) {
     loop {
         match queue.reserve() {
             Ok((_, message)) => {
-                let msg: Message = serde_json::from_str(&message).unwrap();
+                let mut msg: Message = serde_json::from_str(&message).unwrap();
+                msg.is_from_file();
                 let xlsx_files = msg.get_files().unwrap();
                 xlsx_files.to_xlsx();
             },
